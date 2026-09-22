@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - FocusFlow</title>
+
+    <link rel="stylesheet" href="/static/css/auth.css">
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <div class="auth-brand">
+
+        <div class="logo">
+            FF
+        </div>
+
+        <h1>FocusFlow</h1>
+
+        <p>
+            Study smarter.<br>
+            Focus better.
+        </p>
+
+        <div class="brand-info">
+            <span>25 min Focus</span>
+            <span>5 min Break</span>
+        </div>
+
+    </div>
+
+
+    <div class="auth-form-container">
+
+        <div class="auth-card">
+
+            <h2>Welcome Back</h2>
+
+            <p class="subtitle">
+                Login to continue your study journey.
+            </p>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                {% if form.errors %}
+                    <div class="error-message">
+                        Invalid username or password.
+                    </div>
+                {% endif %}
+
+                <div class="form-group">
+
+                    <label for="id_username">
+                        Username
+                    </label>
+
+                    <input
+                        type="text"
+                        name="username"
+                        id="id_username"
+                        placeholder="Enter your username"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="id_password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        name="password"
+                        id="id_password"
+                        placeholder="Enter your password"
+                        required
+                    >
+
+                </div>
+
+
+                <button type="submit" class="primary-button">
+                    Login
+                </button>
+
+            </form>
+
+
+            <p class="switch-text">
+                Don't have an account?
+
+                <a href="{% url 'register' %}">
+                    Create Account
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

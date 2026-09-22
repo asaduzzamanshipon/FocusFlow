@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Register - FocusFlow</title>
+
+    <link rel="stylesheet" href="/static/css/auth.css">
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <div class="auth-brand">
+
+        <div class="logo">
+            FF
+        </div>
+
+        <h1>FocusFlow</h1>
+
+        <p>
+            Build your routine.<br>
+            Improve your focus.
+        </p>
+
+        <div class="brand-info">
+            <span>Daily Routine</span>
+            <span>Study Progress</span>
+        </div>
+
+    </div>
+
+
+    <div class="auth-form-container">
+
+        <div class="auth-card">
+
+            <h2>Create Account</h2>
+
+            <p class="subtitle">
+                Start your focused study journey.
+            </p>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="error-message">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+
+                <!-- Username -->
+                <div class="form-group">
+
+                    <label for="id_username">
+                        Username
+                    </label>
+
+                    <input
+                        type="text"
+                        name="username"
+                        id="id_username"
+                        placeholder="Choose a username"
+                        value="{{ form.username.value|default:'' }}"
+                        required
+                    >
+
+                    {% for error in form.username.errors %}
+                        <small class="field-error">
+                            {{ error }}
+                        </small>
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Password -->
+                <div class="form-group">
+
+                    <label for="id_password1">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        name="password1"
+                        id="id_password1"
+                        placeholder="Create a password"
+                        required
+                    >
+
+                    {% for error in form.password1.errors %}
+                        <small class="field-error">
+                            {{ error }}
+                        </small>
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+
+                    <label for="id_password2">
+                        Confirm Password
+                    </label>
+
+                    <input
+                        type="password"
+                        name="password2"
+                        id="id_password2"
+                        placeholder="Confirm your password"
+                        required
+                    >
+
+                    {% for error in form.password2.errors %}
+                        <small class="field-error">
+                            {{ error }}
+                        </small>
+                    {% endfor %}
+
+                </div>
+
+
+                <button type="submit" class="primary-button">
+                    Create Account
+                </button>
+
+            </form>
+
+
+            <p class="switch-text">
+
+                Already have an account?
+
+                <a href="{% url 'login' %}">
+                    Login
+                </a>
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
