@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,11 +16,10 @@
 
     <div class="auth-brand">
 
-        <div class="logo">
-            FF
+        <div class="auth-logo">
+            <img src="{% static 'images/focusflow-logo.png' %}"
+                alt="FocusFlow Logo">
         </div>
-
-        <h1>FocusFlow</h1>
 
         <p>
             Build your routine.<br>

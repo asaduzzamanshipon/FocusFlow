@@ -1,0 +1,166 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Today's Tasks - FocusFlow{% endblock %}
+
+{% block page_heading %}
+Today's Tasks
+{% endblock %}
+
+{% block page_subheading %}
+Manage your study tasks for today.
+{% endblock %}
+
+{% block content %}
+
+<div class="tasks-page">
+
+    <!-- Add Task -->
+    <div class="task-form-card">
+
+        <div class="section-header">
+            <div>
+                <h2>Add New Task</h2>
+                <p>Create a task for today.</p>
+            </div>
+        </div>
+
+        <form method="POST" class="task-form">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="title">Task Title</label>
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    placeholder="e.g. Complete Database Assignment"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="3"
+                    placeholder="Add task details..."
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="due_time">Time</label>
+                <input
+                    type="time"
+                    id="due_time"
+                    name="due_time"
+                >
+            </div>
+
+            <button type="submit" class="primary-button">
+                + Add Task
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- Today's Tasks -->
+    <div class="task-list-card">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Today's Tasks</h2>
+                <p>{{ today|date:"l, F d, Y" }}</p>
+            </div>
+
+            <div class="task-count">
+                {{ todays_tasks|length }} Tasks
+            </div>
+
+        </div>
+
+
+        <div class="task-list">
+
+            {% for task in todays_tasks %}
+
+            <div class="task-item {% if task.completed %}completed{% endif %}">
+
+                <div class="task-check">
+
+                    <a
+                        href="{% url 'complete_task' task.id %}"
+                        class="check-button"
+                    >
+                        {% if task.completed %}
+                            ✓
+                        {% endif %}
+                    </a>
+
+                </div>
+
+
+                <div class="task-content">
+
+                    <h3>
+                        {{ task.title }}
+                    </h3>
+
+                    {% if task.description %}
+                    <p>
+                        {{ task.description }}
+                    </p>
+                    {% endif %}
+
+                    {% if task.due_time %}
+                    <span class="task-time">
+                        🕐 {{ task.due_time|time:"g:i A" }}
+                    </span>
+                    {% endif %}
+
+                </div>
+
+
+                <div class="task-actions">
+
+                    <a
+                        href="{% url 'delete_task' task.id %}"
+                        class="delete-button"
+                        onclick="return confirm('Delete this task?');"
+                    >
+                        🗑
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="empty-tasks">
+
+                <div class="empty-icon">
+                    ✓
+                </div>
+
+                <h3>No tasks for today</h3>
+
+                <p>
+                    Add your first task using the form above.
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

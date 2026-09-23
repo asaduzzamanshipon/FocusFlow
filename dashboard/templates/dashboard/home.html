@@ -1,0 +1,408 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Dashboard - FocusFlow
+{% endblock %}
+
+
+{% block page_heading %}
+Dashboard
+{% endblock %}
+
+
+{% block page_subheading %}
+Welcome back, {{ user.username }}!
+{% endblock %}
+
+
+{% block content %}
+
+<section class="dashboard-grid">
+
+
+    <!-- ================= TODAY'S FOCUS ================= -->
+
+    <div class="card focus-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>Today's Focus</h2>
+
+                <p>
+                    Your study progress for today
+                </p>
+
+            </div>
+
+            <span class="card-menu">
+                •••
+            </span>
+
+        </div>
+
+
+        <div class="focus-content">
+
+            <div class="focus-circle">
+
+                <div>
+
+                    <strong>
+                        {{ task_progress }}%
+                    </strong>
+
+                    <span>
+                        Today's Progress
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="focus-stats">
+
+                <div>
+
+                    <strong>
+                        {{ total_tasks }}
+                    </strong>
+
+                    <span>
+                        Today's Tasks
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        {{ completed_tasks }}
+                    </strong>
+
+                    <span>
+                        Completed
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        {{ remaining_tasks }}
+                    </strong>
+
+                    <span>
+                        Remaining
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        {{ task_progress }}%
+                    </strong>
+
+                    <span>
+                        Progress
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= POMODORO ================= -->
+
+    <div class="card pomodoro-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>Pomodoro</h2>
+
+                <p>
+                    Stay focused with 25/5 sessions
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="pomodoro-display">
+
+            <div class="timer">
+                25:00
+            </div>
+
+            <span>
+                Ready to focus?
+            </span>
+
+        </div>
+
+
+        <a href="{% url 'pomodoro' %}"
+           class="primary-button full-button">
+
+            Start Session
+
+        </a>
+
+    </div>
+
+
+    <!-- ================= TASKS ================= -->
+
+    <div class="card tasks-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>Today's Tasks</h2>
+
+                <p>
+                    Keep your day organized
+                </p>
+
+            </div>
+
+
+            <a href="{% url 'tasks' %}"
+               class="view-link">
+
+                View All
+
+            </a>
+
+        </div>
+
+
+        <div class="task-list">
+
+            {% for task in todays_tasks %}
+
+                <div class="task {% if task.completed %}completed{% endif %}">
+
+                    <div class="task-check">
+
+                        {% if task.completed %}
+                            ✓
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="task-details">
+
+                        <strong>
+                            {{ task.title }}
+                        </strong>
+
+
+                        <span>
+
+                            {% if task.due_time %}
+
+                                {{ task.due_time|time:"h:i A" }}
+
+                            {% else %}
+
+                                No time set
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <div class="empty-state">
+                    No tasks for today.
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <a href="{% url 'tasks' %}"
+           class="secondary-button">
+
+            + Add Task
+
+        </a>
+
+    </div>
+
+
+    <!-- ================= ROUTINE ================= -->
+
+    <div class="card routine-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>Daily Routine</h2>
+
+                <p>
+                    Your study schedule
+                </p>
+
+            </div>
+
+
+            <a href="{% url 'routine' %}"
+               class="view-link">
+
+                Manage
+
+            </a>
+
+        </div>
+
+
+        <div class="routine-list">
+
+            {% for routine in todays_routine %}
+
+                <div class="routine-item">
+
+                    <span class="routine-time">
+
+                        {{ routine.start_time|time:"h:i A" }}
+
+                    </span>
+
+
+                    <div class="routine-line"></div>
+
+
+                    <div>
+
+                        <strong>
+                            {{ routine.title }}
+                        </strong>
+
+                        <span>
+                            {{ routine.subject }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <p class="empty-state">
+                    No routine scheduled for today.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= WEEKLY PROGRESS ================= -->
+
+    <div class="card progress-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>Weekly Progress</h2>
+
+                <p>
+                    Your focus this week
+                </p>
+
+            </div>
+
+
+            <a href="{% url 'progress' %}"
+               class="percentage">
+
+                {{ task_progress }}%
+
+            </a>
+
+        </div>
+
+
+        <div class="progress-bar">
+
+            <div class="progress-fill"
+                 style="width: {{ task_progress }}%;">
+
+            </div>
+
+        </div>
+
+
+        <div class="progress-summary">
+
+            <strong>
+                {{ completed_tasks }}
+            </strong>
+
+            <span>
+                tasks completed today
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= QUICK ACTIONS ================= -->
+
+    <div class="card actions-card">
+
+        <h2>
+            Quick Actions
+        </h2>
+
+
+        <div class="quick-actions">
+
+            <a href="{% url 'tasks' %}">
+                + Add Task
+            </a>
+
+
+            <a href="{% url 'routine' %}">
+                + Add Routine
+            </a>
+
+
+            <a href="{% url 'pomodoro' %}">
+                ▶ Start Pomodoro
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

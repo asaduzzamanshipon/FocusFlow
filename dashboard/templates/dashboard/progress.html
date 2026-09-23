@@ -1,0 +1,255 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Progress - FocusFlow{% endblock %}
+
+{% block page_heading %}
+Progress
+{% endblock %}
+
+{% block page_subheading %}
+Track your study activity and daily performance.
+{% endblock %}
+
+{% block content %}
+
+<div class="progress-page">
+
+    <!-- Today's Overview -->
+
+    <div class="progress-overview">
+
+        <div class="progress-card main-progress-card">
+
+            <div class="progress-card-header">
+
+                <div>
+                    <h2>Today's Progress</h2>
+
+                    <p>
+                        {{ today|date:"l, F d, Y" }}
+                    </p>
+                </div>
+
+                <div class="progress-percentage">
+                    {{ today_progress }}%
+                </div>
+
+            </div>
+
+
+            <div class="large-progress-bar">
+
+                <div
+                    class="large-progress-fill"
+                    style="width: {{ today_progress }}%;"
+                ></div>
+
+            </div>
+
+
+            <div class="progress-summary">
+
+                <div>
+                    <strong>{{ total_tasks }}</strong>
+                    <span>Total Tasks</span>
+                </div>
+
+                <div>
+                    <strong>{{ completed_tasks }}</strong>
+                    <span>Completed</span>
+                </div>
+
+                <div>
+                    <strong>{{ remaining_tasks }}</strong>
+                    <span>Remaining</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Routine Card -->
+
+        <div class="progress-card routine-progress-card">
+
+            <div class="progress-stat-icon">
+                📅
+            </div>
+
+            <span>
+                Total Routines
+            </span>
+
+            <strong>
+                {{ total_routines }}
+            </strong>
+
+            <small>
+                Study routines created
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <!-- Weekly Progress -->
+
+    <div class="progress-card weekly-progress-card">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Weekly Progress</h2>
+
+                <p>
+                    Your task completion for this week.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="weekly-list">
+
+            {% for item in weekly_data %}
+
+            <div class="weekly-day">
+
+                <div class="weekly-day-name">
+                    {{ item.day }}
+                </div>
+
+
+                <div class="weekly-bar-container">
+
+                    <div
+                        class="weekly-bar"
+                        style="width: {{ item.percentage }}%;"
+                    ></div>
+
+                </div>
+
+
+                <div class="weekly-percentage">
+                    {{ item.percentage }}%
+                </div>
+
+
+                <div class="weekly-count">
+
+                    {{ item.completed }}/{{ item.total }}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Study Statistics -->
+
+    <div class="progress-card statistics-card">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Study Statistics</h2>
+
+                <p>
+                    Your current activity overview.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="statistics-grid">
+
+            <div class="stat-box">
+
+                <div class="stat-icon">
+                    ✓
+                </div>
+
+                <div>
+                    <strong>
+                        {{ completed_tasks }}
+                    </strong>
+
+                    <span>
+                        Tasks Completed Today
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="stat-box">
+
+                <div class="stat-icon">
+                    ⏳
+                </div>
+
+                <div>
+                    <strong>
+                        {{ remaining_tasks }}
+                    </strong>
+
+                    <span>
+                        Tasks Remaining
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="stat-box">
+
+                <div class="stat-icon">
+                    📚
+                </div>
+
+                <div>
+                    <strong>
+                        {{ total_routines }}
+                    </strong>
+
+                    <span>
+                        Study Routines
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="stat-box">
+
+                <div class="stat-icon">
+                    📈
+                </div>
+
+                <div>
+                    <strong>
+                        {{ today_progress }}%
+                    </strong>
+
+                    <span>
+                        Today's Completion
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

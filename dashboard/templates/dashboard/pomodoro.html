@@ -1,0 +1,419 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Pomodoro - FocusFlow{% endblock %}
+
+{% block page_heading %}
+Pomodoro Timer
+{% endblock %}
+
+{% block page_subheading %}
+Stay focused with 25 minutes of study and 5 minutes of break.
+{% endblock %}
+
+{% block content %}
+
+<div class="pomodoro-page">
+
+    <div class="pomodoro-card">
+
+        <!-- Mode -->
+
+        <div class="pomodoro-mode">
+
+            <button
+                id="focusMode"
+                class="mode-button active"
+                onclick="setMode('focus')"
+            >
+                Focus
+            </button>
+
+            <button
+                id="breakMode"
+                class="mode-button"
+                onclick="setMode('break')"
+            >
+                Short Break
+            </button>
+
+        </div>
+
+
+        <!-- Timer -->
+
+        <div class="timer-circle">
+
+            <div class="timer-inner">
+
+                <span id="timer">
+                    25:00
+                </span>
+
+                <small id="modeText">
+                    Focus Time
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <!-- Controls -->
+
+        <div class="timer-controls">
+
+            <button
+                id="startButton"
+                class="timer-primary-button"
+                onclick="startTimer()"
+            >
+                ▶ Start
+            </button>
+
+            <button
+                class="timer-secondary-button"
+                onclick="pauseTimer()"
+            >
+                ⏸ Pause
+            </button>
+
+            <button
+                class="timer-secondary-button"
+                onclick="resetTimer()"
+            >
+                ↻ Reset
+            </button>
+
+        </div>
+
+
+        <!-- Session info -->
+
+        <div class="session-info">
+
+            <div class="session-box">
+
+                <span id="sessionCount">
+                    0
+                </span>
+
+                <small>
+                    Sessions
+                </small>
+
+            </div>
+
+
+            <div class="session-box">
+
+                <span>
+                    25 min
+                </span>
+
+                <small>
+                    Focus Length
+                </small>
+
+            </div>
+
+
+            <div class="session-box">
+
+                <span>
+                    5 min
+                </span>
+
+                <small>
+                    Break Length
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Tips -->
+
+    <div class="pomodoro-tips">
+
+        <h2>
+            How Pomodoro Works
+        </h2>
+
+        <div class="tips-grid">
+
+            <div class="tip-card">
+
+                <div class="tip-number">
+                    1
+                </div>
+
+                <div>
+                    <h3>
+                        Focus
+                    </h3>
+
+                    <p>
+                        Study without distractions for 25 minutes.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="tip-card">
+
+                <div class="tip-number">
+                    2
+                </div>
+
+                <div>
+                    <h3>
+                        Take a Break
+                    </h3>
+
+                    <p>
+                        Relax for 5 minutes after completing a focus session.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="tip-card">
+
+                <div class="tip-number">
+                    3
+                </div>
+
+                <div>
+                    <h3>
+                        Repeat
+                    </h3>
+
+                    <p>
+                        Continue the cycle and keep making progress.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let timerInterval = null;
+
+let currentMode = "focus";
+
+let focusSeconds = 25 * 60;
+let breakSeconds = 5 * 60;
+
+let remainingSeconds = focusSeconds;
+
+let sessions = 0;
+
+let running = false;
+
+
+function updateDisplay() {
+
+    const minutes = Math.floor(
+        remainingSeconds / 60
+    );
+
+    const seconds = remainingSeconds % 60;
+
+    document.getElementById("timer").textContent =
+        String(minutes).padStart(2, "0")
+        + ":"
+        + String(seconds).padStart(2, "0");
+
+}
+
+
+function startTimer() {
+
+    if (running) {
+        return;
+    }
+
+    running = true;
+
+    document.getElementById("startButton").textContent =
+        "▶ Running...";
+
+    timerInterval = setInterval(() => {
+
+        if (remainingSeconds > 0) {
+
+            remainingSeconds--;
+
+            updateDisplay();
+
+        } else {
+
+            clearInterval(timerInterval);
+
+            timerInterval = null;
+
+            running = false;
+
+            if (currentMode === "focus") {
+
+                sessions++;
+
+                document.getElementById("sessionCount").textContent =
+                    sessions;
+
+                switchToBreak();
+
+            } else {
+
+                switchToFocus();
+
+            }
+
+        }
+
+    }, 1000);
+
+}
+
+
+function pauseTimer() {
+
+    if (timerInterval) {
+
+        clearInterval(timerInterval);
+
+        timerInterval = null;
+
+    }
+
+    running = false;
+
+    document.getElementById("startButton").textContent =
+        "▶ Start";
+
+}
+
+
+function resetTimer() {
+
+    pauseTimer();
+
+    if (currentMode === "focus") {
+
+        remainingSeconds = focusSeconds;
+
+    } else {
+
+        remainingSeconds = breakSeconds;
+
+    }
+
+    updateDisplay();
+
+}
+
+
+function setMode(mode) {
+
+    pauseTimer();
+
+    currentMode = mode;
+
+    if (mode === "focus") {
+
+        remainingSeconds = focusSeconds;
+
+        document.getElementById("focusMode")
+            .classList.add("active");
+
+        document.getElementById("breakMode")
+            .classList.remove("active");
+
+        document.getElementById("modeText").textContent =
+            "Focus Time";
+
+    } else {
+
+        remainingSeconds = breakSeconds;
+
+        document.getElementById("breakMode")
+            .classList.add("active");
+
+        document.getElementById("focusMode")
+            .classList.remove("active");
+
+        document.getElementById("modeText").textContent =
+            "Short Break";
+
+    }
+
+    updateDisplay();
+
+}
+
+
+function switchToBreak() {
+
+    currentMode = "break";
+
+    remainingSeconds = breakSeconds;
+
+    document.getElementById("focusMode")
+        .classList.remove("active");
+
+    document.getElementById("breakMode")
+        .classList.add("active");
+
+    document.getElementById("modeText").textContent =
+        "Short Break";
+
+    updateDisplay();
+
+    alert("Focus session completed! Time for a 5-minute break.");
+
+    startTimer();
+
+}
+
+
+function switchToFocus() {
+
+    currentMode = "focus";
+
+    remainingSeconds = focusSeconds;
+
+    document.getElementById("breakMode")
+        .classList.remove("active");
+
+    document.getElementById("focusMode")
+        .classList.add("active");
+
+    document.getElementById("modeText").textContent =
+        "Focus Time";
+
+    updateDisplay();
+
+    alert("Break completed! Time to focus again.");
+
+    startTimer();
+
+}
+
+
+updateDisplay();
+
+</script>
+
+{% endblock %}

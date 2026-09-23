@@ -240,3 +240,16 @@ body {
     font-size: 13px;
     margin-bottom: 18px;
 }
+.auth-logo {
+    width: 150px;
+    margin: 0 auto 25px;
+    display: flex;
+    justify-content: center;
+}
+
+.auth-logo img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}

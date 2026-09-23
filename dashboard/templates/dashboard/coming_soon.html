@@ -1,0 +1,52 @@
+{% extends "dashboard/base.html" %}
+
+
+{% block title %}
+{{ page_title }} - FocusFlow
+{% endblock %}
+
+
+{% block page_heading %}
+{{ page_title }}
+{% endblock %}
+
+
+{% block page_subheading %}
+{{ page_description }}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="coming-soon-card">
+
+    <div class="coming-soon-icon">
+        ◷
+    </div>
+
+
+    <h2>
+        {{ page_title }}
+    </h2>
+
+
+    <p>
+        {{ page_description }}
+    </p>
+
+
+    <span>
+        This feature will be implemented next.
+    </span>
+
+
+    <a href="{% url 'dashboard' %}"
+       class="primary-button">
+
+        ← Back to Dashboard
+
+    </a>
+
+</div>
+
+{% endblock %}

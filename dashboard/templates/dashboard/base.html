@@ -1,0 +1,257 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}FocusFlow{% endblock %}
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/dashboard.css' %}">
+
+    {% block extra_css %}{% endblock %}
+
+</head>
+
+
+<body>
+
+<div class="app-layout">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                <img src="{% static 'images/focusflow-logo.png' %}"
+                 alt="FocusFlow Logo">
+            </div>
+
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <a href="{% url 'dashboard' %}"
+               class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+
+                <span class="nav-icon">⌂</span>
+
+                <span>Home</span>
+
+            </a>
+
+
+            <a href="{% url 'tasks' %}"
+               class="nav-item {% if request.resolver_match.url_name == 'tasks' %}active{% endif %}">
+
+                <span class="nav-icon">✓</span>
+
+                <span>Today's Tasks</span>
+
+            </a>
+
+
+            <a href="{% url 'routine' %}"
+               class="nav-item {% if request.resolver_match.url_name == 'routine' %}active{% endif %}">
+
+                <span class="nav-icon">▣</span>
+
+                <span>Daily Routine</span>
+
+            </a>
+
+
+            <a href="{% url 'pomodoro' %}"
+               class="nav-item {% if request.resolver_match.url_name == 'pomodoro' %}active{% endif %}">
+
+                <span class="nav-icon">◷</span>
+
+                <span>Pomodoro</span>
+
+            </a>
+
+
+            <a href="{% url 'progress' %}"
+               class="nav-item {% if request.resolver_match.url_name == 'progress' %}active{% endif %}">
+
+                <span class="nav-icon">▥</span>
+
+                <span>Progress</span>
+
+            </a>
+
+
+            <a href="{% url 'notifications' %}"
+               class="nav-item {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}">
+
+                <span class="nav-icon">♢</span>
+
+                <span>Notifications</span>
+
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-spacer"></div>
+
+
+        <div class="sidebar-bottom">
+
+            <!-- <a href="#"
+               class="nav-item">
+
+                <span class="nav-icon">⚙</span>
+
+                <span>Settings</span>
+
+            </a> -->
+
+
+            <a href="{% url 'logout' %}"
+               class="nav-item logout">
+
+                <span class="nav-icon">↪</span>
+
+                <span>Logout</span>
+
+            </a>
+
+        </div>
+
+
+        <!-- USER -->
+
+        <div class="user-profile">
+
+            <div class="avatar">
+
+                {{ user.username|first|upper }}
+
+            </div>
+
+
+            <div class="user-info">
+
+                <strong>
+                    {{ user.username }}
+                </strong>
+
+                <small>
+                    FocusFlow User
+                </small>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= RIGHT SIDE ================= -->
+
+    <div class="page-wrapper">
+
+
+        <!-- TOP HEADER -->
+
+        <header class="top-header">
+
+            <div class="page-heading">
+
+                <h1>
+                    {% block page_heading %}Dashboard{% endblock %}
+                </h1>
+
+                <p>
+                    {% block page_subheading %}
+                        Welcome back, {{ user.username }}!
+                    {% endblock %}
+                </p>
+
+            </div>
+
+
+            <div class="header-actions">
+
+                <a href="{% url 'notifications' %}"
+                   class="notification-button">
+
+                    🔔
+
+                    <span class="notification-dot"></span>
+
+                </a>
+
+
+                <a href="{% url 'pomodoro' %}"
+                   class="primary-button">
+
+                    + Start Focus
+
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================= MAIN ================= -->
+
+        <main class="main-content">
+
+            {% block content %}
+
+            {% endblock %}
+
+        </main>
+
+
+        <!-- ================= FOOTER ================= -->
+
+        <footer class="footer">
+
+            <div>
+
+                © 2026 FocusFlow
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <a href="{% url 'dashboard' %}">
+                    Home
+                </a>
+
+                <a href="{% url 'progress' %}">
+                    Progress
+                </a>
+
+                <a href="{% url 'notifications' %}">
+                    Notifications
+                </a>
+
+            </div>
+
+        </footer>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

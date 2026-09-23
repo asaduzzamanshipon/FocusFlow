@@ -1,0 +1,419 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Notifications - FocusFlow{% endblock %}
+
+{% block page_heading %}
+Notifications
+{% endblock %}
+
+{% block page_subheading %}
+Stay updated with your tasks and study routine.
+{% endblock %}
+
+{% block content %}
+
+<div class="notifications-page">
+
+    <!-- Summary -->
+
+    <div class="notification-summary">
+
+        <div class="notification-stat">
+
+            <div class="notification-stat-icon">
+                ✓
+            </div>
+
+            <div>
+                <strong>{{ completed_today }}</strong>
+                <span>Completed Today</span>
+            </div>
+
+        </div>
+
+
+        <div class="notification-stat">
+
+            <div class="notification-stat-icon">
+                ⏳
+            </div>
+
+            <div>
+                <strong>{{ pending_today }}</strong>
+                <span>Pending Today</span>
+            </div>
+
+        </div>
+
+
+        <div class="notification-stat">
+
+            <div class="notification-stat-icon">
+                📅
+            </div>
+
+            <div>
+                <strong>{{ todays_routines|length }}</strong>
+                <span>Today's Routines</span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Overdue -->
+
+    {% if overdue_tasks %}
+
+    <div class="notification-card overdue-card">
+
+        <div class="notification-section-header">
+
+            <div>
+                <h2>⚠ Overdue Tasks</h2>
+
+                <p>
+                    These tasks are still incomplete.
+                </p>
+            </div>
+
+            <span class="notification-badge danger">
+                {{ overdue_tasks|length }}
+            </span>
+
+        </div>
+
+
+        <div class="notification-list">
+
+            {% for task in overdue_tasks %}
+
+            <div class="notification-item overdue">
+
+                <div class="notification-icon">
+                    ⚠
+                </div>
+
+                <div class="notification-content">
+
+                    <strong>
+                        {{ task.title }}
+                    </strong>
+
+                    <p>
+                        Due {{ task.due_date|date:"M d, Y" }}
+
+                        {% if task.due_time %}
+                            at {{ task.due_time|time:"g:i A" }}
+                        {% endif %}
+                    </p>
+
+                </div>
+
+                <a
+                    href="{% url 'tasks' %}"
+                    class="notification-action"
+                >
+                    View
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- Today's Tasks -->
+
+    <div class="notification-card">
+
+        <div class="notification-section-header">
+
+            <div>
+                <h2>Today's Tasks</h2>
+
+                <p>
+                    {{ today|date:"l, F d, Y" }}
+                </p>
+            </div>
+
+            <span class="notification-badge">
+                {{ pending_today }} Pending
+            </span>
+
+        </div>
+
+
+        <div class="notification-list">
+
+            {% for task in todays_tasks %}
+
+            <div class="notification-item
+                {% if task.completed %}completed{% endif %}">
+
+                <div class="notification-icon">
+
+                    {% if task.completed %}
+                        ✓
+                    {% else %}
+                        📝
+                    {% endif %}
+
+                </div>
+
+
+                <div class="notification-content">
+
+                    <strong>
+                        {{ task.title }}
+                    </strong>
+
+                    <p>
+
+                        {% if task.completed %}
+
+                            Task completed
+
+                        {% else %}
+
+                            {% if task.due_time %}
+                                Scheduled for {{ task.due_time|time:"g:i A" }}
+                            {% else %}
+                                Task scheduled for today
+                            {% endif %}
+
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+
+                {% if task.completed %}
+
+                <span class="status-completed">
+                    Completed
+                </span>
+
+                {% else %}
+
+                <a
+                    href="{% url 'tasks' %}"
+                    class="notification-action"
+                >
+                    View
+                </a>
+
+                {% endif %}
+
+            </div>
+
+            {% empty %}
+
+            <div class="notification-empty">
+
+                <div>
+                    ✓
+                </div>
+
+                <h3>
+                    No tasks today
+                </h3>
+
+                <p>
+                    You have no tasks scheduled for today.
+                </p>
+
+                <a
+                    href="{% url 'tasks' %}"
+                    class="primary-button"
+                >
+                    Add Task
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Today's Routine -->
+
+    <div class="notification-card">
+
+        <div class="notification-section-header">
+
+            <div>
+                <h2>Today's Routine</h2>
+
+                <p>
+                    Your scheduled study sessions.
+                </p>
+            </div>
+
+            <span class="notification-badge">
+                {{ todays_routines|length }} Sessions
+            </span>
+
+        </div>
+
+
+        <div class="notification-list">
+
+            {% for routine in todays_routines %}
+
+            <div class="notification-item">
+
+                <div class="notification-icon">
+                    📚
+                </div>
+
+
+                <div class="notification-content">
+
+                    <strong>
+                        {{ routine.title }}
+                    </strong>
+
+                    <p>
+
+                        {% if routine.subject %}
+                            {{ routine.subject }} ·
+                        {% endif %}
+
+                        {{ routine.start_time|time:"g:i A" }}
+
+                        {% if routine.end_time %}
+                            - {{ routine.end_time|time:"g:i A" }}
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="{% url 'routine' %}"
+                    class="notification-action"
+                >
+                    View
+                </a>
+
+            </div>
+
+            {% empty %}
+
+            <div class="notification-empty">
+
+                <div>
+                    📅
+                </div>
+
+                <h3>
+                    No routine today
+                </h3>
+
+                <p>
+                    You don't have a study routine scheduled today.
+                </p>
+
+                <a
+                    href="{% url 'routine' %}"
+                    class="primary-button"
+                >
+                    Add Routine
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Upcoming Tasks -->
+
+    <div class="notification-card">
+
+        <div class="notification-section-header">
+
+            <div>
+                <h2>Upcoming Tasks</h2>
+
+                <p>
+                    Tasks scheduled for the coming days.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="notification-list">
+
+            {% for task in upcoming_tasks %}
+
+            <div class="notification-item">
+
+                <div class="notification-icon">
+                    📅
+                </div>
+
+
+                <div class="notification-content">
+
+                    <strong>
+                        {{ task.title }}
+                    </strong>
+
+                    <p>
+
+                        {{ task.due_date|date:"D, M d, Y" }}
+
+                        {% if task.due_time %}
+                            · {{ task.due_time|time:"g:i A" }}
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="{% url 'tasks' %}"
+                    class="notification-action"
+                >
+                    View
+                </a>
+
+            </div>
+
+            {% empty %}
+
+            <div class="notification-empty small">
+
+                <p>
+                    No upcoming tasks.
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
