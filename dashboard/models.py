@@ -3,6 +3,7 @@ from django.db import models
 
 
 class Task(models.Model):
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -39,6 +40,7 @@ class Task(models.Model):
 
 
 class Routine(models.Model):
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -70,6 +72,85 @@ class Routine(models.Model):
 
     class Meta:
         ordering = ["start_time"]
+
+    def __str__(self):
+        return self.title
+
+
+class PomodoroSession(models.Model):
+
+    SESSION_TYPES = [
+        ("focus", "Focus"),
+        ("break", "Break"),
+    ]
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="pomodoro_sessions"
+    )
+
+    session_type = models.CharField(
+        max_length=10,
+        choices=SESSION_TYPES
+    )
+
+    duration_minutes = models.PositiveIntegerField(
+        default=25
+    )
+
+    completed_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ["-completed_at"]
+
+    def __str__(self):
+        return (
+            f"{self.user.username} - "
+            f"{self.session_type} - "
+            f"{self.duration_minutes} min"
+        )
+
+
+class Notification(models.Model):
+
+    NOTIFICATION_TYPES = [
+        ("task", "Task"),
+        ("routine", "Routine"),
+        ("pomodoro", "Pomodoro"),
+        ("break", "Break"),
+        ("system", "System"),
+    ]
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="notifications"
+    )
+
+    notification_type = models.CharField(
+        max_length=20,
+        choices=NOTIFICATION_TYPES
+    )
+
+    title = models.CharField(
+        max_length=200
+    )
+
+    message = models.TextField()
+
+    is_read = models.BooleanField(
+        default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
 
     def __str__(self):
         return self.title

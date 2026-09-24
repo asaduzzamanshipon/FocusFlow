@@ -4,7 +4,9 @@ from django.utils import timezone
 from datetime import timedelta
 from datetime import timedelta
 
-from .models import Task, Routine
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .models import Task, Routine, PomodoroSession, Notification
 
 
 @login_required
@@ -192,6 +194,52 @@ def pomodoro(request):
         request,
         "dashboard/pomodoro.html"
     )
+
+
+@login_required
+@require_POST
+def complete_pomodoro(request):
+
+    session_type = request.POST.get("session_type", "focus")
+    duration = request.POST.get("duration", "25")
+
+    if session_type not in ["focus", "break"]:
+        return JsonResponse(
+            {
+                "success": False,
+                "message": "Invalid session type."
+            },
+            status=400
+        )
+
+    try:
+        duration = int(duration)
+    except (TypeError, ValueError):
+        return JsonResponse(
+            {
+                "success": False,
+                "message": "Invalid duration."
+            },
+            status=400
+        )
+
+    PomodoroSession.objects.create(
+        user=request.user,
+        session_type=session_type,
+        duration_minutes=duration
+    )
+
+    Notification.objects.create(
+        user=request.user,
+        notification_type="pomodoro",
+        title="Pomodoro Completed",
+        message=f"{session_type.capitalize()} session completed for {duration} minutes."
+    )
+
+    return JsonResponse({
+        "success": True,
+        "message": "Pomodoro session saved."
+    })
 
 
 @login_required

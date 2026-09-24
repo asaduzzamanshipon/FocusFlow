@@ -2352,3 +2352,254 @@ button {
     display: block;
     object-fit: contain;
 }
+/* =========================================
+   POMODORO TIMER CIRCLE
+========================================= */
+
+.timer-circle {
+    --progress: 100%;
+
+    width: 280px;
+    height: 280px;
+
+    margin: 30px auto;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        conic-gradient(
+            #718d80 0%,
+            #718d80 var(--progress),
+            #dce5df var(--progress),
+            #dce5df 100%
+        );
+
+    position: relative;
+
+    transition:
+        background 0.5s linear;
+}
+
+
+/* Inner white circle */
+
+.timer-circle::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 250px;
+    height: 250px;
+
+    border-radius: 50%;
+
+    background: white;
+}
+
+
+/* Timer content */
+
+.timer-inner {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 220px;
+    height: 220px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+}
+
+
+/* Timer number */
+
+#timer {
+
+    font-size: 52px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    letter-spacing: 1px;
+}
+
+
+/* Focus / Break text */
+
+#modeText {
+
+    margin-top: 12px;
+
+    font-size: 15px;
+
+    opacity: 0.7;
+}
+.completion-message {
+    display: none;
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 16px 20px;
+    border-radius: 14px;
+    background: #eef7f1;
+    border: 1px solid #c9dfd2;
+
+    align-items: center;
+    gap: 14px;
+
+    animation: messageSlideIn 0.3s ease;
+}
+
+.completion-message.show {
+    display: flex;
+}
+
+.completion-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #718d80;
+    color: white;
+
+    font-size: 22px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.completion-message strong {
+    display: block;
+    font-size: 17px;
+    margin-bottom: 4px;
+}
+
+.completion-message p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.completion-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.45);
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 9999;
+}
+
+.completion-modal.show {
+    display: flex;
+}
+
+.modal-content {
+    width: 90%;
+    max-width: 400px;
+
+    background: white;
+    border-radius: 18px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+
+    animation: modalShow 0.25s ease;
+}
+
+.modal-icon {
+    width: 60px;
+    height: 60px;
+
+    margin: 0 auto 18px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #718d80;
+    color: white;
+
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.modal-content h3 {
+    margin: 0 0 10px;
+    font-size: 22px;
+}
+
+.modal-content p {
+    margin: 0 0 25px;
+    color: #666;
+}
+
+#modalOkButton {
+    width: 100%;
+    padding: 12px 20px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #718d80;
+    color: white;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+#modalOkButton:hover {
+    opacity: 0.9;
+}
+
+@keyframes modalShow {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

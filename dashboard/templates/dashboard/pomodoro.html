@@ -1,7 +1,6 @@
 {% extends "dashboard/base.html" %}
 
 {% block title %}Pomodoro - FocusFlow{% endblock %}
-
 {% block page_heading %}
 Pomodoro Timer
 {% endblock %}
@@ -16,32 +15,39 @@ Stay focused with 25 minutes of study and 5 minutes of break.
 
     <div class="pomodoro-card">
 
-        <!-- Mode -->
+        <!-- =========================
+             MODE
+        ========================== -->
 
         <div class="pomodoro-mode">
 
             <button
+                type="button"
                 id="focusMode"
                 class="mode-button active"
-                onclick="setMode('focus')"
-            >
+                onclick="setMode('focus')">
                 Focus
             </button>
 
             <button
+                type="button"
                 id="breakMode"
                 class="mode-button"
-                onclick="setMode('break')"
-            >
+                onclick="setMode('break')">
                 Short Break
             </button>
 
         </div>
 
 
-        <!-- Timer -->
+        <!-- =========================
+             TIMER
+        ========================== -->
 
-        <div class="timer-circle">
+        <div
+            class="timer-circle"
+            id="timerCircle"
+            style="--progress: 100%;">
 
             <div class="timer-inner">
 
@@ -56,38 +62,59 @@ Stay focused with 25 minutes of study and 5 minutes of break.
             </div>
 
         </div>
+        <audio id="timerSound" preload="auto">
+            <source src="/static/sounds/timer-complete.mp3" type="audio/mpeg">
+        </audio>
+        <div id="completionModal" class="completion-modal">
+            <div class="modal-content">
+                <div class="modal-icon">✓</div>
 
+                <h3 id="modalTitle">Focus session completed!</h3>
 
-        <!-- Controls -->
+                <p id="modalMessage">
+                    Time for a 5-minute break.
+                </p>
+
+                <button id="modalOkButton" type="button">
+                    OK
+                </button>
+            </div>
+        </div>
+
+        <!-- =========================
+             CONTROLS
+        ========================== -->
 
         <div class="timer-controls">
 
             <button
+                type="button"
                 id="startButton"
                 class="timer-primary-button"
-                onclick="startTimer()"
-            >
+                onclick="startTimer()">
                 ▶ Start
             </button>
 
             <button
+                type="button"
                 class="timer-secondary-button"
-                onclick="pauseTimer()"
-            >
+                onclick="pauseTimer()">
                 ⏸ Pause
             </button>
 
             <button
+                type="button"
                 class="timer-secondary-button"
-                onclick="resetTimer()"
-            >
+                onclick="resetTimer()">
                 ↻ Reset
             </button>
 
         </div>
 
 
-        <!-- Session info -->
+        <!-- =========================
+             SESSION INFO
+        ========================== -->
 
         <div class="session-info">
 
@@ -134,7 +161,9 @@ Stay focused with 25 minutes of study and 5 minutes of break.
     </div>
 
 
-    <!-- Tips -->
+    <!-- =========================
+         TIPS
+    ========================== -->
 
     <div class="pomodoro-tips">
 
@@ -151,6 +180,7 @@ Stay focused with 25 minutes of study and 5 minutes of break.
                 </div>
 
                 <div>
+
                     <h3>
                         Focus
                     </h3>
@@ -158,6 +188,7 @@ Stay focused with 25 minutes of study and 5 minutes of break.
                     <p>
                         Study without distractions for 25 minutes.
                     </p>
+
                 </div>
 
             </div>
@@ -170,6 +201,7 @@ Stay focused with 25 minutes of study and 5 minutes of break.
                 </div>
 
                 <div>
+
                     <h3>
                         Take a Break
                     </h3>
@@ -177,6 +209,7 @@ Stay focused with 25 minutes of study and 5 minutes of break.
                     <p>
                         Relax for 5 minutes after completing a focus session.
                     </p>
+
                 </div>
 
             </div>
@@ -189,6 +222,7 @@ Stay focused with 25 minutes of study and 5 minutes of break.
                 </div>
 
                 <div>
+
                     <h3>
                         Repeat
                     </h3>
@@ -196,6 +230,7 @@ Stay focused with 25 minutes of study and 5 minutes of break.
                     <p>
                         Continue the cycle and keep making progress.
                     </p>
+
                 </div>
 
             </div>
@@ -209,35 +244,76 @@ Stay focused with 25 minutes of study and 5 minutes of break.
 
 <script>
 
+/* =========================================
+   POMODORO SETTINGS
+========================================= */
+
+// 5 seconds for testing
+// const FOCUS_SECONDS = 10;
+// const BREAK_SECONDS = 5;
+
+// For actual Pomodoro use:
+const FOCUS_SECONDS = 25 * 60;
+const BREAK_SECONDS = 5 * 60;
+
+
+/* =========================================
+   TIMER VARIABLES
+========================================= */
+
 let timerInterval = null;
-
 let currentMode = "focus";
-
-let focusSeconds = 25 * 60;
-let breakSeconds = 5 * 60;
-
-let remainingSeconds = focusSeconds;
-
+let remainingSeconds = FOCUS_SECONDS;
 let sessions = 0;
-
 let running = false;
 
 
+/* =========================================
+   UPDATE TIMER DISPLAY
+========================================= */
+
 function updateDisplay() {
 
-    const minutes = Math.floor(
-        remainingSeconds / 60
-    );
+    const timerElement =
+        document.getElementById("timer");
 
-    const seconds = remainingSeconds % 60;
+    const timerCircle =
+        document.getElementById("timerCircle");
 
-    document.getElementById("timer").textContent =
+
+    const minutes =
+        Math.floor(remainingSeconds / 60);
+
+    const seconds =
+        remainingSeconds % 60;
+
+
+    timerElement.textContent =
         String(minutes).padStart(2, "0")
         + ":"
         + String(seconds).padStart(2, "0");
 
+
+    const totalSeconds =
+        currentMode === "focus"
+            ? FOCUS_SECONDS
+            : BREAK_SECONDS;
+
+
+    const progress =
+        (remainingSeconds / totalSeconds) * 100;
+
+
+    timerCircle.style.setProperty(
+        "--progress",
+        progress + "%"
+    );
 }
 
+
+/* =========================================
+   START TIMER
+========================================= */
 
 function startTimer() {
 
@@ -245,12 +321,24 @@ function startTimer() {
         return;
     }
 
+
+    // Don't start if modal is open
+    const modal =
+        document.getElementById("completionModal");
+
+    if (modal.classList.contains("show")) {
+        return;
+    }
+
+
     running = true;
 
-    document.getElementById("startButton").textContent =
-        "▶ Running...";
 
-    timerInterval = setInterval(() => {
+    document.getElementById("startButton")
+        .textContent = "▶ Running...";
+
+
+    timerInterval = setInterval(function () {
 
         if (remainingSeconds > 0) {
 
@@ -266,151 +354,468 @@ function startTimer() {
 
             running = false;
 
-            if (currentMode === "focus") {
 
-                sessions++;
+            document.getElementById("startButton")
+                .textContent = "▶ Start";
 
-                document.getElementById("sessionCount").textContent =
-                    sessions;
 
-                switchToBreak();
-
-            } else {
-
-                switchToFocus();
-
-            }
-
+            finishSession();
         }
 
     }, 1000);
-
 }
 
 
+/* =========================================
+   PAUSE TIMER
+========================================= */
+
 function pauseTimer() {
 
-    if (timerInterval) {
+    if (timerInterval !== null) {
 
         clearInterval(timerInterval);
 
         timerInterval = null;
-
     }
+
 
     running = false;
 
-    document.getElementById("startButton").textContent =
-        "▶ Start";
 
+    document.getElementById("startButton")
+        .textContent = "▶ Start";
 }
 
+
+/* =========================================
+   RESET TIMER
+========================================= */
 
 function resetTimer() {
 
     pauseTimer();
 
+
     if (currentMode === "focus") {
 
-        remainingSeconds = focusSeconds;
+        remainingSeconds = FOCUS_SECONDS;
 
     } else {
 
-        remainingSeconds = breakSeconds;
-
+        remainingSeconds = BREAK_SECONDS;
     }
 
-    updateDisplay();
 
+    updateDisplay();
 }
 
+
+/* =========================================
+   MANUAL MODE CHANGE
+========================================= */
 
 function setMode(mode) {
 
     pauseTimer();
 
+
     currentMode = mode;
+
+
+    const focusButton =
+        document.getElementById("focusMode");
+
+    const breakButton =
+        document.getElementById("breakMode");
+
+    const modeText =
+        document.getElementById("modeText");
+
 
     if (mode === "focus") {
 
-        remainingSeconds = focusSeconds;
+        remainingSeconds = FOCUS_SECONDS;
 
-        document.getElementById("focusMode")
-            .classList.add("active");
 
-        document.getElementById("breakMode")
-            .classList.remove("active");
+        focusButton.classList.add("active");
 
-        document.getElementById("modeText").textContent =
+        breakButton.classList.remove("active");
+
+
+        modeText.textContent =
             "Focus Time";
 
     } else {
 
-        remainingSeconds = breakSeconds;
+        remainingSeconds = BREAK_SECONDS;
 
-        document.getElementById("breakMode")
-            .classList.add("active");
 
-        document.getElementById("focusMode")
-            .classList.remove("active");
+        breakButton.classList.add("active");
 
-        document.getElementById("modeText").textContent =
+        focusButton.classList.remove("active");
+
+
+        modeText.textContent =
             "Short Break";
-
     }
 
-    updateDisplay();
 
+    updateDisplay();
 }
 
+
+/* =========================================
+   FINISH SESSION
+========================================= */
+
+function finishSession() {
+
+    /* -----------------------------
+       PLAY SOUND
+    ----------------------------- */
+
+    const sound =
+        document.getElementById("timerSound");
+
+
+    if (sound) {
+
+        sound.currentTime = 0;
+
+        sound.play()
+            .then(function () {
+
+                console.log(
+                    "Timer sound played successfully."
+                );
+
+            })
+            .catch(function (error) {
+
+                console.error(
+                    "Timer sound failed:",
+                    error
+                );
+
+            });
+    }
+
+
+    /* -----------------------------
+       SAVE CURRENT SESSION
+    ----------------------------- */
+
+    const sessionType =
+        currentMode;
+
+
+    const duration =
+        currentMode === "focus"
+            ? 25
+            : 5;
+
+
+    savePomodoroSession(
+        sessionType,
+        duration
+    );
+
+
+    /* -----------------------------
+       SHOW MODAL
+    ----------------------------- */
+
+    if (currentMode === "focus") {
+
+        sessions++;
+
+
+        document.getElementById("sessionCount")
+            .textContent = sessions;
+
+
+        showCompletionModal(
+            "Focus session completed!",
+            "Time for a 5-minute break.",
+            "break"
+        );
+
+    } else {
+
+        showCompletionModal(
+            "Break completed!",
+            "Time to focus again.",
+            "focus"
+        );
+    }
+}
+
+
+/* =========================================
+   SHOW COMPLETION MODAL
+========================================= */
+
+let pendingSessionChange = null;
+
+
+function showCompletionModal(
+    title,
+    message,
+    nextMode
+) {
+
+    const modal =
+        document.getElementById("completionModal");
+
+    const titleElement =
+        document.getElementById("modalTitle");
+
+    const messageElement =
+        document.getElementById("modalMessage");
+
+
+    titleElement.textContent = title;
+
+    messageElement.textContent = message;
+
+
+    pendingSessionChange =
+        nextMode;
+
+
+    modal.classList.add("show");
+}
+
+
+/* =========================================
+   MODAL OK BUTTON
+========================================= */
+
+document
+    .getElementById("modalOkButton")
+    .addEventListener("click", function () {
+
+        const modal =
+            document.getElementById("completionModal");
+
+
+        /* Hide modal */
+
+        modal.classList.remove("show");
+
+
+        /* Check next mode */
+
+        if (pendingSessionChange === "break") {
+
+            switchToBreak();
+
+        } else if (
+            pendingSessionChange === "focus"
+        ) {
+
+            switchToFocus();
+        }
+
+
+        pendingSessionChange = null;
+    });
+
+
+/* =========================================
+   SWITCH TO BREAK
+========================================= */
 
 function switchToBreak() {
 
     currentMode = "break";
 
-    remainingSeconds = breakSeconds;
+    remainingSeconds =
+        BREAK_SECONDS;
+
 
     document.getElementById("focusMode")
         .classList.remove("active");
 
+
     document.getElementById("breakMode")
         .classList.add("active");
 
-    document.getElementById("modeText").textContent =
-        "Short Break";
+
+    document.getElementById("modeText")
+        .textContent = "Short Break";
+
 
     updateDisplay();
 
-    alert("Focus session completed! Time for a 5-minute break.");
+
+    /*
+     * Start automatically AFTER
+     * clicking OK.
+     */
 
     startTimer();
-
 }
 
+
+/* =========================================
+   SWITCH TO FOCUS
+========================================= */
 
 function switchToFocus() {
 
     currentMode = "focus";
 
-    remainingSeconds = focusSeconds;
+    remainingSeconds =
+        FOCUS_SECONDS;
+
 
     document.getElementById("breakMode")
         .classList.remove("active");
 
+
     document.getElementById("focusMode")
         .classList.add("active");
 
-    document.getElementById("modeText").textContent =
-        "Focus Time";
+
+    document.getElementById("modeText")
+        .textContent = "Focus Time";
+
 
     updateDisplay();
 
-    alert("Break completed! Time to focus again.");
+
+    /*
+     * Start automatically AFTER
+     * clicking OK.
+     */
 
     startTimer();
-
 }
 
+
+/* =========================================
+   SAVE POMODORO SESSION
+========================================= */
+
+function savePomodoroSession(
+    sessionType,
+    duration
+) {
+
+    const csrfToken =
+        getCookie("csrftoken");
+
+
+    fetch(
+        "{% url 'complete_pomodoro' %}",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/x-www-form-urlencoded",
+
+                "X-CSRFToken":
+                    csrfToken
+            },
+
+            body:
+                "session_type="
+                + encodeURIComponent(sessionType)
+                + "&duration="
+                + encodeURIComponent(duration)
+        }
+    )
+
+    .then(function(response) {
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP error: "
+                + response.status
+            );
+        }
+
+
+        return response.json();
+    })
+
+    .then(function(data) {
+
+        console.log(
+            "Pomodoro session saved:",
+            data
+        );
+
+    })
+
+    .catch(function(error) {
+
+        console.error(
+            "Pomodoro save error:",
+            error
+        );
+
+    });
+}
+
+
+/* =========================================
+   GET CSRF COOKIE
+========================================= */
+
+function getCookie(name) {
+
+    let cookieValue = null;
+
+
+    if (
+        document.cookie &&
+        document.cookie !== ""
+    ) {
+
+        const cookies =
+            document.cookie.split(";");
+
+
+        for (
+            let cookie of cookies
+        ) {
+
+            cookie = cookie.trim();
+
+
+            if (
+                cookie.substring(
+                    0,
+                    name.length + 1
+                ) === name + "="
+            ) {
+
+                cookieValue =
+                    decodeURIComponent(
+                        cookie.substring(
+                            name.length + 1
+                        )
+                    );
+
+
+                break;
+            }
+        }
+    }
+
+
+    return cookieValue;
+}
+
+
+/* =========================================
+   INITIALIZE TIMER
+========================================= */
 
 updateDisplay();
 
